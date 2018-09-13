@@ -1,0 +1,346 @@
+//webstrom注册服务器：http://idea.liyang.io
+
+-------------慕课网ts视频教程-------------------
+@types 类型定义文件，可以在ts中使用js写的库开发
+
+1.typeScript 编译器：  把typescript代码转出JavaScript代码
+2. tsc Hello.ts  //产生Hello.js
+//ng generate component User 简写   service  module
+ng g c User
+3.1多行字符串  
+‘abc
+def`
+3.2字符串模板：
+var name = "tom";
+var getName = function(){return "jack";}
+console.log(`the name is ${name}`);
+console.log(`The name is ${getName()}`);
+console.log(`<div>
+	<span>${name}</span>
+</div>`);
+3.3自动拆分字符串
+function test(template,name,age){
+	console.log(template);//被切割成数组
+	console.log(name);
+	console.log(age);
+}
+function getName(){
+	return "Luck";
+}
+var age = 18;
+test`My name is ${getName()},${age} years old.`;//第一个参数就是字符串模板
+
+4.类型
+var myname:string="123";//typeScript编辑器里面会进行类型推断、检查
+var alias:any ="str";//可以赋值任意类型
+var age:number=13;
+var man:boolean=true;
+function hello(name:string):void{
+	return "";//void返回值声明，会报错
+}
+自定义类型：
+class Person{
+	name：string;
+	age:number;
+}
+
+var p1:Person=new Person();
+p1.name="zs";
+p1.age=12;
+
+5.参数指定默认值
+//带默认值的参数必须声明在后面;默认值可以不传参数
+
+function test(a:string,b:string,c:string="default"){
+	console.log(a);
+	console.log(b);
+	console.log(c);
+}
+
+test("x","y","z");//如果没有默认值，必须传递3个参数
+
+6.可选参数
+//要处理，可选参数没传的情况;可选参数必须声明在 必选参数 的后面
+function test(a:string,b?:number,c:string="jojo"){
+	
+}
+
+7.任意数量参数
+function fun(...args){
+	args.forEach(function(arg){
+		console.log(arg);
+	});
+}
+
+//任意长度数组，转化为固定个数参数（多了不传，少了传undefined）
+var arg2=[1,2,3];
+固定3个数参数，传参func1(...arg2)
+
+8.generator函数：通过*号声明的函数，控制代码暂停和执行
+function* doSomething(){
+	console.log("start");
+	yield;
+	console.log("end");
+}
+doSomething();//直接调用不起作用
+var f = doSomething();
+f.next();//  打印start
+f.next();//打印end
+
+function* getStockPrice(){
+	while(true){
+		yield Math.random()*100;//random 返回 0-1 随机数
+	}
+}
+var priceGenerator = getStockPrice();
+var price = 100;
+limitPrice=15;
+while(price > limitPrice){
+	price=priceGenerator.next().value;
+	console.log(`current price is ${price}`);
+}
+console.log(`Buy at ${price}`);
+
+9.析构表达式：写更少的代码，从对象、数组里面取值放到本地变量
+function getStock(){
+	return{
+		code:"IBM",
+		price:100
+	}
+}
+
+var {code：codex,price} = getStock();//对象属性，转化为本地变量；名称要一致，不一致 :本地变量名
+
+{ code,price:{price2} }//拿到嵌套对象的属性
+
+var arr=[1,2,3,4];
+var [num1,num2] = arr;
+var [,,num3,num4] = arr;
+var [num1,num2,...others]=arr;//others=[3,4]
+
+10.箭头表达式：声明匿名函数，消除匿名函数this指针问题
+//var sum = function (arg1, arg2) { return arg1 + arg2; };
+var sum = (arg1,arg2) => arg1 + arg2  ;//单行，可以不写大括号和return   
+
+只有一个参数情况下，参数可以不写小括号 value => value%2==0;
+
+function getStock(name){
+	this.name = name;
+	setInterval(function(){
+		console.log(this.name);
+	},1000);
+}
+
+11.typeScript循环 for of 对比forEach   for  in（对象或集合键值对的键，即属性名）  
+var myArr = [1,2,3,4];
+myArr.desc = "four number array";//在ts不可以赋属性，会有警告
+myArr.forEach(v => console.log(v));//循环，忽略属性
+
+for(var n in myArr){
+	console.log(n);
+	console.log(myArr[n]);
+}
+
+for(var n of myArr){
+	if(n>2) break;//可以使用break
+	console.log(n);//忽略desc属性
+}
+for(var n of "abc-123"){
+	console.log(n);//循环打印每一个字符
+}
+
+12.面向对象
+12.1 类内部默认访问控制符public；还有private（只能在类的内部访问），protected
+class Person{
+	name;
+	age;
+	//constructor只在实例化new的时候调用
+	constructor(){
+		console.log("instance");
+	}
+	
+	//只能有一个constructor
+	constructor(name:string){
+		this.name = name;
+		console.log("instance");
+	}
+	
+	//在constructor上,使用访问控制符，声明属性;不使用访问控制符，就没有声明属性
+	constructor(public age:number){
+	
+	}
+	
+	
+	eat(){
+		console.log("eating");
+	}
+}
+
+12.2 extends 类继承：继承属性、方法
+
+class Employee extends Person{
+	code:string;
+	//子类构造函数必须调用父类构造函数
+	constructor(name:string,code:string){
+		super(name);//super关键字  调用父类构造方法
+		this.code = code;
+	}
+	
+	
+	work(){
+		super.eat();//super.调用父类方法
+		this.doWork();
+	}
+	//private 在类外部无法调用
+	private doWork(){
+		console.log("i am working");
+	}
+}
+
+13.泛型 <类型>
+var workers:Array<Person> = [];
+workers[0]=new Person();
+workers[1]=new Employee("kk","123");
+
+14.接口 interface  遵循接口所定义的代码约定
+14.1 接口用作类型声明,属性
+interface IPerson{
+	name：string;
+	age：number;
+}
+
+class Person{
+	constructor(public config:IPerson){
+	
+	}
+}
+
+var p1 = new Person({name:"a",age:1});
+
+
+14.2 类 implements 接口,实现接口里面的方法
+interface Animal{
+	eat();
+}
+
+class Sheep implements Animal{
+	eat(){
+		console.log("i eat grass");
+	}
+}
+
+class Wolf implements Animal{
+	eat(){
+		console.log("i eat meat");
+	}
+}
+
+15.模块:代码分割为可重用的单元,开发者决定模块中那些资源暴露给外部使用,哪些资源只在模块内部使用。
+export var prop1；//对外暴露的属性;两个文件，使用 import { prop1 } from "./file1"另外一个文件能直接访问
+export function func1(){}
+export class Class1{}
+
+16.注解annotation：加上说明，给框架使用。  （angular里面 decorator装饰器）
+@Component({
+	templateUrl:"",
+	selector:"",
+	styleUrls:[]
+	
+})  
+
+17.类型定义文件：github 上 DefinitelyTyped
+declare module "jquery"{
+	export = $;//暴露 $ 符号;在ts中能使用$("#xxx")
+}
+declare var $:JQueryStatic;
+用typings工具安装类型定义文件
+
+
+
+//压缩  ahead of time 预编译
+ng serve --prod --aot
+
+//dist目录 编译生成的内容
+ng build 
+
+// 慕课网 1.x视频有
+ng test
+
+//依赖注入：构造器注入 injector属性
+1.每一个HTML表情上面都会有一个注射器实例
+2.注射是通过constructor进行的
+3. @Injectable是 @Component的父类，所以@Component 可以注入其他服务
+4.提供器只负责实例化,实例好的服务由注入器负责注入。
+5.注入器层级：应用级注入器 providers  imports模块的注入器 - 主组件注入器 - 子组件注入器providers（声明的提供器）
+6.注入点：只有构造函数
+
+数据绑定：属性绑定 [src]="imgUrl" 等价于插值表达式  src="{{imgUrl}}"
+事件绑定：(click)="onClick($event)"  (click)="saved = true"
+
+HTML属性绑定：
+1.基本html属性绑定 <td [attr.colspan]="tableColspan"> </td>    attr.属性名
+
+2.CSS类绑定：
+<div class='aaa bbb' [class]="ccc"></div>   ccc 全有全无的 整个直接替代 
+<div [class.aaa]="isA"></div>   isA 是true 则  切换单个类名的好办法
+<div [ngClass]="{a:isA,b:isB}"></div>   切换多个类
+
+3.样式绑定
+<div [style.font.em]="3"></div>    单位em 加到后面 font-size:3em
+<div [ngStyle]="{'color':isSpecial?'red':'blue'}"></div>
+<div [style.font]="isBig?'10px':'5px'"></div>
+
+
+DOM属性绑定：
+插值表达式就是DOM属性绑定
+<img [src]='imgUrl'>
+<img src ="{{imgUrl}}">
+
+
+双向绑定： [(ngModel)] “盒子装香蕉”   只能用在input 等元素上 需要引入 FormsModule 模块
+视图  模型
+
+
+搭建开发环境：
+1.Angular-CLI
+npm i (install) -g cnpm
+cnpm i -g angular-cli   //安装Angular-CLI
+
+
+[依赖注入 Dependence Injection DI ] 依赖反转
+注入器 constructor(private productService:ProductService)
+提供器  providers:[ProductService]  //服务必须 被提供 才能使用
+		providers:[{provider:ProductService,useClass:ProductService}]  //useClass new一个实例
+		providers:[{provider:ProductService,useClass:AnotherProductService}]
+		providers:[{provide:ProductService,useFactory:()=>{//工厂方法,返回一个实例}]
+		
+观察者模式与Rxjs：
+响应式编程：异步事件流编程
+
+在浏览器中产生的事件，在JavaScript中都会封装成event对象 event.target 属性指向了事件发生事件的元素 
+模板本地变量 ：<input type="text" #myInput (keyup)="onKey(myInput.value)">
+"angular里面将事件作为永不停止的流来处理"
+
+管道
+async ：异步管道 // 在页面上处理数据流
+
+组件间通讯：
+组件的输入输出属性（父子关系 组件通讯） @Input()  @Output() myEvent:EventEmmit<xxx> = new EventEmmit();  
+eventemit 发射 自定义事件    (myEvent)="eventHandler($event)"  // myEvent  绑定到父组件eventHandler方法  $event 即 发射的值
+
+中间人模式：
+共同父组件：兄弟组件通过父组件作为中间人，Input  Output
+
+路由：routerLink   this.router.navigateByUrl()    this.routeinfo.snapshot.params["id"]
+重定向路由：pathMatch:'full'  或者 pathMatch：'prefix'
+
+
+组件生命周期：
+组件创建  组件变更检测机制 
+
+//启动服务自动监听文件修改
+nodemon  ./server.js
+
+//请求 转发
+ng serve --proxy-config ./src/proxy.config.json
+
